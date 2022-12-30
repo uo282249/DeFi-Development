@@ -322,9 +322,35 @@ A la hora de crear una cuenta de Ethereum, la mayoría de bibliotecas generan un
 La clave pública se genera a partir de la privada, utilizando el algoritmo de firma digital de la curva elíptica.
 Las cuentas de contrato poseen además una dirección hexadecimal de 42 caracteres (más corta que las claves), la cual se asigna cuando un contrato se implementa en la cadena de bloques de Ethereum y se obtiene de la dirección del creador y el número de transacciones enviadas desde esa dirección (el "nonce").
 
-### 
+### Transacciones
+Las transacciones son instrucciones firmadas criptográficamente que se emiten desde cuentas. Una cuenta iniciará una transacción para actualizar el estado de la red Ethereum. La transacción más sencilla es transferir ETH de una cuenta a otra.
+![Ethereum_Transactions1](https://ethereum.org/static/570dedb843948d6bef5e21a6769d5c35/302a4/tx.png)
+Modifican el estado de la EVM y se deben transmitir a toda la red.
+Cualquier nodo puede transmitir una solicitud de una transacción que se va a ejecutar en la EVM; a continuación, un minero ejecutará la transacción y propagará la modificación de estado derivada al resto de la red.
+Las transacciones implican el pago de una comisión y deben minarse para convertirse en transacciones válidas.
 
+Incluyen la siguiente información:
+- ```from```: identificador del remitente, generado cuando, mediante la clave privada, se firma la transacción y se confirma que el remitente la ha autorizado.
+- ```to```: la dirección del destinatario (si es una EOA, se transerirá valor. Si es una cuenta de contrato, se ejecutará el código de contrato).
+- ```nonce```: un contador incremental que indica el número de transacción de la cuenta.
+- ```value```: cantidad de ETH a transferir (en WEI).
+- ```data```: campo opcional para incluir datos.
+- ```gasLimit```: la cantidad máxima de unidades de gas que pueden ser consumidas en la transacción.
+- ```maxPriorityFeePerGas```: la cantidad máxima de gas que se incluirá como propina al validador.
+- ```maxFeePerGas```: la cantidad máxima a pagar deseada para la transacción.
 
+El gas es una referencia al cálculo necesario para que el minero procese la transacción. Los usuarios tienen que pagar una comisión por ese cálculo. Los valores ```gasLimit``` y ```maxPriorityFeePerGas``` determinan la comisión por transacción máxima que se le paga al minero.
+```json
+{
+  from: "0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8",
+  to: "0xac03bb73b6a9e108530aff4df5077c2b3d481e5a",
+  gasLimit: "21000",
+  maxFeePerGas: "300",
+  maxPriorityFeePerGas: "10",
+  nonce: "0",
+  value: "10000000000"
+}
+```
 
 ### Referencias
 Vídeo de pares de claves:
