@@ -203,9 +203,6 @@ Cuando existen numerosas transacciones dependiendo de otras, no debemos preocupa
 En los bancos tradicionales, la forma de privacidad es limitando el acceso a las transacciones que se producen y a las partes que intervienen en ellas. Sin embargo, bitcoin debe anunciar publicamente cada transacción, por tanto, esto no es posible.
 La privacidad se consigue manteniendo anónimas las claves públicas y/o utilizando direcciones (addreses) en su lugar. Una buena práctica es utilizar un nuevo par de claves y direcciones por cada transacción.
 
-### 11. Cálculos
-Si suponemos 
-
 ### Referencias
 Probar el funcionamiento de firmas ECDSA:
 https://kjur.github.io/jsrsasign/sample/sample-ecdsa.html
