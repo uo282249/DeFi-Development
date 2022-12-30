@@ -206,6 +206,8 @@ La privacidad se consigue manteniendo anónimas las claves públicas y/o utiliza
 ### Referencias
 Probar el funcionamiento de firmas ECDSA:
 https://kjur.github.io/jsrsasign/sample/sample-ecdsa.html
+Vídeo funcionamiento de Blockchain:
+https://www.youtube.com/watch?v=_160oMzblY8
 
 ### Bibliografía
 https://medium.com/coinmonks/bitcoin-white-paper-explained-part-1-4-16cba783146a
@@ -213,3 +215,39 @@ https://academy.binance.com/es/articles/double-spending-explained
 https://medium.com/@sgerov/bitcoin-white-paper-explained-part-2-4-d79fbc5e2adf
 https://academy.binance.com/es/articles/proof-of-work-explained
 https://medium.com/coinmonks/bitcoin-white-paper-explained-part-3-3-c06c1791a31b
+
+## Elliptic Curve Cryptography
+El sistema de criptografía está basado en las matemáticas de las curvas elípticas.
+Una curva elíptica es un conjunto de puntos (x,y) que satisfacen la siguiente ecuación:
+```
+y² = x³ +ax + b
+```
+Una curva elíptica se vería así:
+![elliptic_curve1](https://miro.medium.com/max/640/1*KKdvscN4y-NcGZ8Nnx1ZYQ.webp)
+
+Si tomamos un punto cualquiera P=(x,y) de la curva y lo sumamos a otro punto cualquiera Q de la curva, volveremos a obtener un punto ubicado en la curva:
+![elliptic_curve2](https://miro.medium.com/max/640/1*O6Hxnd6uwz6FY-AZm0ZExg.webp)
+
+Si ahora cogemos un punto P de la curva y lo sumamos x veces a sí mismo, seguiremos obteniendo un punto perteneciente a la curva.
+```
+P+P+…+P = xP = R
+```
+Este último caso nos interesa.
+Se demuestra que es computacionalmente inviable calcular el número x sólo conociendo los puntos P y R. Es el llamado problema del logaritmo discreto.
+En criptografía, se elige un punto P de la curva elíptica y se genera un número natural aleatorio suficientemente grande. Este número es la clave privada (private key). Con el punto P elegido y la clave privada, se calcula el punto R en la curva, el cual será la clave pública (public key).
+Dicho esto, se puede observar que las claves públicas y privadas están fuertemente conectadas entre ellas.
+La clave pública no podría existir sin la privada y la privada es prácticamente imposible obtenerla a partir de la pública debido al problema del logaritmo discreto.
+
+### Bibliografía
+https://medium.com/coinmonks/learn-how-to-code-elliptic-curve-cryptography-a952dfdc20ab
+
+
+
+
+
+
+
+
+
+
+
