@@ -61,16 +61,104 @@ La persona A puede usar su clave privada para firmar un documento (p.e: la renta
 ##### Direcciones bitcoin (Bitcoin addresses)
 Una dirección bitcoin es generada mediante varias funciones hash de una clave pública ECDSA. Por tanto, al igual que cualquier persona puede generar un par de claves pública/privada único, también puede generar direcciones bitcoin únicas. 
 
-### La cadena (The chain)
+#### La cadena (The chain)
 Una transacción es una transferencia de un valor Bitcoin de una o varias entradas a una o varias salidas.
 
 ![bitcoin_transactions](https://miro.medium.com/max/640/1*KEva3f4PHE2z7g92m2xp4A.webp)
+
 Esto es una representación de 2 transacciones  (simplificadas a una entrada y una salida) pertenecientes a una cadena. El contenido de la caja de transacción representa cómo está firmada:
 Vamos a suponer que somos el dueño 1 ("Owner 1") y estamos generando la transacción de la derecha ("Transaction" [der.]). Utilizamos la clave pública de la persona destinataria ("Owner 2's Public Key") y la transacción anterior ("Transaction" [izq.]) para crear la cadena ("Hash" [der.]), la cual firmaremos utilizando nuestra clave privada.
+La cadena ("Hash") se crea para establecer un tamaño fijo y que éste no sea cada vez mayor. De esta forma se aumenta la velocidad.
+Una vez generada la transacción, ¿cómo sabemos que podemos gastar los bitcoin que tenemos asignados?. Esta es la razón por la cual el dueño 0 ("Owner 0" [no incl.]) ha incluido nuestra clave pública en su firma, al igual que hicimos nosotros con el dueño 2 ("Owner 2"). De esta forma, el dueño 0 ha firmado que tenemos derecho a gastar una determinada cantidad.
+
+Podríamos pensar por qué necesitamos direcciones bitcoin (bitcoin adresses), si realmente estamos enviando bitcoins utilizando las claves públicas. Añadir las direcciones encima de cada transacción otorga un nivel más de seguridad. En el caso de que alguien consiga atravesar una capa de seguridad, lo único que podría conseguir es la fecha de transacción y la dirección de destino.
+Para más seguridad, es recomendado utilizar una dirección y par de claves privadas diferentes para cada transacción.
+
+#### Un ejemplo
+A continuación se muestra un ejemplo de una transacción real en formato JSON.
+```json
+{
+   "txid":"64317d1c1626ae040ba2cb48b66b8a514320e4415e7d00394bbaa5beff343a3c",
+   "vin":[
+      {
+         "txid":"672aeb1bc62b3941f2e9a530ff6d12e5e70c257632d536d5b0633e12b68a915d",
+         "vout":1,
+         "scriptSig":{
+            "asm":"3044022066941da0cbe35013d5f92261bb3eeaef9f9729a62dafb1ef1f743cd0fed22f2a02202f3461bcad5c9a80af0f21033de2302563998ffac394d09c14791b285b661014[ALL] 030a13a4fe430d3bf0c1e3ed5ea31e6dad19b56e5c60322a60a283d1d430acddf8"
+         },
+         "addr":"1HKqcNrf3NPuz4s2MdoAzpYYfjYvbbsxZf",
+         "value":0.0468234
+      },
+      {
+         "txid":"d1dc8deb93ba5a0747c898859db99c03ff5a4f50686716d6c61d757dd5c63b27",
+         "vout":0,
+         "scriptSig":{
+            "asm":"3044022069d043bcb1401169c8e9ce88c47ebf6b973abba5302efdb44df6801af9f1d79d02202ffad54fecb31edd63c805bb7a7553d77a20ebfce820e8ac198c1898e86ffcfc[ALL] 026ed1317c4a225c461b7dbbca89332f4e2f725fe823f05bd29d4c60da4d5dbd1d"
+         },
+         "addr":"1CMzyZjERPYvecNcn2GDxpHCLqPCwAst3c",
+         "value":0.0016471
+      }
+   ],
+   "vout":[
+      {
+         "value":"0.03847050",
+         "n":0,
+         "scriptPubKey":{
+            "asm":"OP_DUP OP_HASH160 1d49a050b1e965f59301f304bc9914378044364e OP_EQUALVERIFY OP_CHECKSIG",
+            "addresses":[
+               "13froCnxWczJNiJXYLQQikWygvyMFXqVUJ"
+            ],
+            "type":"pubkeyhash"
+         }
+      },
+      {
+         "value":"0.00775226",
+         "n":1,
+         "scriptPubKey":{
+            "asm":"OP_DUP OP_HASH160 f362e8796d04713dda1796b3c609d4b7cd325187 OP_EQUALVERIFY OP_CHECKSIG",
+            "addresses":[
+               "1PBugsUY1N3TvikrtDpQBBYuMBFoQWTHXi"
+            ],
+            "type":"pubkeyhash"
+         }
+      }
+   ],
+   "valueOut":0.04622276,
+   "valueIn":0.0484705,
+   "fees":0.00224774
+}
+```
+Primero, observamos un "txid", el cual es el id de la transacción. Es un hash basado en el contenido de la propia transacción.
+Después, se pueden ver las colecciones "vin" y "vout". Son las entradas (inputs) y salidas (outputs), respectivamente.
+En cada "vin" hay:
+- "txid": el hash de la anterior transacción (la que nos envió los bitcoins).
+- "vout": qué output se selecciona de la anterior transacción.
+- "scriptSig": la firma de la transacción (explicada arriba).
+- "addr": la dirección del destinatario de los bitcoins.
+- "value": el número de bitcoins que son enviados.
+
+En cada "vout" hay:
+- "value": la cantidad que finalmente enviamos.
+- "n": el número de salidas (output).
+- "scriptPubKey": contiene la dirección ("adresses") del destinatario, el script para verificar quién puede consumir la cantidad ("asm") y el tipo de script ("type").
+
+Por último, tenemos "valueIn", "valueOut" y "fees", los cuales son un resumen de los valores de los bitcoins de entrada y salida y la comisión que se lleva la máquina que realiza la transacción.
+
+Según el ejemplo anterior, tenemos 0.0468234 + 0.0016471 = 0.0484705 bitcoins de entrada, de las direcciones 1HKqcNrf3NPuz4s2MdoAzpYYfjYvbbsxZf + 1CMzyZjERPYvecNcn2GDxpHCLqPCwAst3c, de los cuales, enviamos 0.0384705 a 13froCnxWczJNiJXYLQQikWygvyMFXqVUJ y 0.00775226 a 1PBugsUY1N3TvikrtDpQBBYuMBFoQWTHXi. Estamos enviando un total de 0.04622276, lo que nos deja con una comisión de 0.00224774.
+En este caso específico, podríamos proponer el siguiente escenario. Una persona A (quien posee las dos direcciones de entrada), envía 0.0384705 a una persona B (quien posee la primera salida). La segunda salida pertenece a la persona A, por lo que sería el cambio que obtiene de la transacción. En caso de no haber una segunda salida, ésta se habría ido como comisión.
+
+#### Doble gasto (Double spending)
+Es un problema potencial de los sistemas de efectivo digital. Consiste en el envío simultáneo de los mismos fondos a dos destinatarios distintos. Esto proboca que los usuarios no tengan forma de verificar que los fondos que reciban no han sido gastados ya en otro sitio.
+
+### Servidor de sellado de tiempo (Timestamp server)
+Un timestamp (sellado de tiempo) determina cuándo ha ocurrido un evento (p.e: convierte la fecha "04/15/2018 @ 11:56am (UTC)" en "1523793381").
 
 
 ### Referencias
 Probar el funcionamiento de firmas ECDSA:
 https://kjur.github.io/jsrsasign/sample/sample-ecdsa.html
+
+
 ### Bibliografía
 https://medium.com/coinmonks/bitcoin-white-paper-explained-part-1-4-16cba783146a
+https://academy.binance.com/es/articles/double-spending-explained
