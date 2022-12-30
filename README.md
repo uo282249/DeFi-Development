@@ -241,12 +241,54 @@ La clave pública no podría existir sin la privada y la privada es prácticamen
 ### Bibliografía
 https://medium.com/coinmonks/learn-how-to-code-elliptic-curve-cryptography-a952dfdc20ab
 
+## Ethereum
+Ethereum es un blockchain con un ordenador incorporado en él. Es la base para crear aplicaciones y organizaciones de forma descentralizada.
+En el universo Ethereum hay un único ordenador llamado Ethereum Virtual Machine (EVM), cuyo estado ha sido acordado por todos los participantes de la red. Cualquier persona que participe en la red de Ethereum (cada nodo) guarda una copia del estado de este ordenador.
+Además, cualquier participante puede emitir una petición para que este ordenador realice un cálculo arbitrario (llamadas solicitudes de transacción). Cuando se emite esta solicitud, otros participantes de la red verifican, validan y ejecutan el cálculo. La ejecución causa un cambio en el estado de la EVM, el cual se realiza y propaga por toda la red.
+Una vez verificadas y añadidas a la cadena de bloques, las transacciones no se pueden volver a manipular. Esto garantiza que las transacciones se firmen y ejecuten con permisos apropiados (p.e: Sólo la persona A puede enviar activos desde la cuenta de la persona A).
 
+### Ether
+Ether (ETH) es la criptomoneda de Ethereum. Su propósito es posibilitar la existencia de un mercado de computación, en el cual se proporciona un incentivo económico a los participantes que verifican y ejecutan solicitudes de transacciones y proporcionan recursos a la red.
+Cualquier participante que solicite una transacción debe también ofrecer una cantidad de ether adicional a la red como recompensa para la persona que realice la verificación de la transacción, la ejecute, la registre en la cadena de bloques y la emita en la red.
+La cantidad de ether a incentivar depende del tiempo necesario para completar el cálculo.
+Esta cantidad también sirve para evitar que participantes maliciosos realicen ataques (p.e: spam), ya que deberán pagar por los cálculos.
 
+### Ethereum Virtual Machine (EVM)
+La EVM no se puede describir como una nube o una ola, pero sí como una única entidad sustentada por miles de ordenadores conectados ejecutando un cliente de Ethereum.
+El protocolo Ethereum existe sólo para mantener el funcionamiento continuo e inmutable de esta máquina, la cual alberga todas las cuentas de Ethereum y los contratos inteligentes.
+En cualquier bloque de la cadena, Ethereum tiene un único estado "canónico", y la EVM es la que define las reglas de cálculo de un nuevo estado válido de bloque a bloque.
 
+#### Del libro de contabilidad a la máquina de estado
+La analogía del libro de contabilidad es utilizada en blockchains como Bitcoin, donde existe una moneda descentralizada que utiliza herramientas fundamentales de criptografía. Esta moneda se comporta "normal" porque sigue unas reglas a la hora de modificar el libro de contabilidad (p.e: una dirección de bitcoin no puede gastar más de lo que tiene).
+Por otro lado, Ethereum, sigue casi las mismas reglas aunque también permite el uso de una función mucho más poderosa: los contratos inteligentes. En lugar de un libro mayor distribuido, Ethereum es una máquina de estado distribuida.
+El estado de Ethereum es una gran estructura de datos, que sostiene tanto todas las cuentas y saldos, como el estado de la máquina. Las reglas específicas de cambiar el estado de bloque a bloque las define la EVM.
+![Ethereum_EVM](https://ethereum.org/static/e8aca8381c7b3b40c44bf8882d4ab930/302a4/evm.png)
 
+#### Función de transición de estado
+La EVM se comporta como una función matemática: dada una entrada, se produce una determinada salida. Por tanto, es bastante útil describir Ethereum como una función de transición de estado:
+```
+Y(S,T)=S'
+```
+Dado un estado válido anterior (S) y un nuevo conjunto de transacciones válidas (T), la función de transición de estado de Ethereum Y(S,T) produce un nuevo estado de salida válido S'.
 
+#### Estado
+El estado es una gran estructura de datos llamada Árbol de Patricia Merkle, la cual mantiene todas las cuentas enlazadas mediante los hashes reducibles a un solo hash raíz almacenado en la blockchain.
 
+#### Instrucciones de la EVM
+La EVM se ejecuta como una máquina de pila.
+Durante la ejecución, la EVM mantiene una memoria temporal que no se conserva entre transacciones.
+Sin embargo, los contratos contienen un Árbol Patricia Merkle de almacenamiento asociado a la cuenta en cuestión y que forma parte del estado global.
+![Ethereum_EVM2](https://ethereum.org/static/9628ab90bfd02f64cf873446cbdc6c70/302a4/gas.png)
+
+### Ethereum wallet
+Las wallets (carteras) de Ethereum son aplicaciones que permiten la interacción con tu cuenta de Ethereum. Tu wallet te permite ver tu saldo, enviar transacciones y conectar con aplicaciones.
+Es una herramienta para únicamente gestionar la cuenta de Ethereum. Por tanto, se puede cambiar a otras wallets sin problema.
+Hay diferentes tipos de wallet:
+- Dispositivos físicos de hardware que permiten mantener las criptomonedas desconectadas.
+- Aplicaciones móviles que permiten acceder a los fondos desde cualquier sitio.
+- De navegador web que permiten ser accedidas directamente desde el navegador.
+- Extensiones de navegador que permiten interactuar con tu cuenta y aplicaciones mediante el navegador.
+- Aplicaciones de escritorio que permiten gestionar los fondos deste macOS, Windows o Linux.
 
 
 
