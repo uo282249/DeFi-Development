@@ -31,14 +31,14 @@ Además, el uso del protocolo P2P hace que sea mucho más rápido, eficaz y econ
 https://www.iebschool.com/blog/que-son-las-dlt-y-en-que-se-diferencian-de-blockchain-digital-business/
 
 ## Bitcoin
-### Introducción
+### 1. Introducción
 El dinero físico permite realizar transferencias de dinero sin intermediarios. En cambio, si se desea realizar de forma digital, se necesita una entidad de por medio (p.e: un banco), lo que implica:
 - Se cobrará una comisión por la transacción.
 - Se guardará información de las partes implicadas en la transacción.
 
 Lo que buscamos es encontrar una forma de realizar pagos de forma digital la cual sea segura y sin interferencias de mediadores externos, evitando así los dos puntos mencionados anteriormente.
 
-### Transacciones
+### 2. Transacciones
 En primer lugar, poseer bitcoins no es como poseer dinero físico o en la cuenta del banco. El saldo del que dispone una persona se calcula en función de las transacciones, las cuales están encadenadas entre ellas. Si decides realizar una transacción a una persona y ésta realiza otra a otra persona, ambas pertenecerán a la misma cadena. El dinero del que dispones está definido por las transacciones que has recibido y las que has realizado.
 #### Conceptos necesarios
 ##### Función hash criptográfica (Cryptographic hash function)
@@ -150,15 +150,69 @@ En este caso específico, podríamos proponer el siguiente escenario. Una person
 #### Doble gasto (Double spending)
 Es un problema potencial de los sistemas de efectivo digital. Consiste en el envío simultáneo de los mismos fondos a dos destinatarios distintos. Esto proboca que los usuarios no tengan forma de verificar que los fondos que reciban no han sido gastados ya en otro sitio.
 
-### Servidor de sellado de tiempo (Timestamp server)
+### 3. Servidor de sellado de tiempo (Timestamp server)
 Un timestamp (sellado de tiempo) determina cuándo ha ocurrido un evento (p.e: convierte la fecha "04/15/2018 @ 11:56am (UTC)" en "1523793381").
+Lo podemos utilizar en la generación del hash de las transacciones para guardar la fecha y hora a la que se ha producido.
 
+### 4. Prueba de trabajo (Proof of Work) //TODO
+Proof of Work (PoW) es un mecanismo para prevenir dobles gastos. La mayoría de las criptomonedas lo utilizan como un algoritmo de consenso, un método para proteger el libro mayor contable de la criptomoneda.
+Necesitamos encontrar una forma de incentivar a distintas máquinas para obtener la información de cuál es el estado y el orden de las transacciones de los bloques que forman la blockchain.
+Si no hubiese un coste asociado a la generación de cada bloque, sería manipulable de forma gratis para cualquier persona, lo que vulnerabilizaría el sistema.
+Lo que hace bitcoin es aplicar la función hash a los encabezados de los bloques, entre los que se encuentran el hash del bloque anterior, el timestamp y el nonce, entre otros. El nonce es un número totalmente aleatorio de 32 bits.
+
+### 5. La red (Network)
+La red se comporta de la siguiente forma:
+- Las nuevas transacciones se transmiten a todos los nodos.
+- Cada nodo agrupa las transacciones en un bloque.
+- Una vez se encuentren las transacciones, éstas son validadas.
+- Una vez validadas, se ejecuta en ellas el PoW para formar el bloque.
+- Una vez aplicado el PoW de un nuevo bloque, el nodo acepta la cadena (chain).
+
+Se considera como correcta la cadena (chain) más larga, aunque las demás ramas se guardan por si acaso aumentan sus tamaños.
+
+Existe un bloque llamado "genesis block", el cual es el primer bloque existente en la blockchain y está hardcodeado con el core de bitcoin por Satoshi Nakamoto.
+
+### 6. Incentivos
+Cada bloque minado tiene una primera transacción llamada "coinbase transaction". Es la que da la recompensa al minero por haber realizado su PoW. Así fue cómo inicialmente los bitcoins fueron puestos en circulación y la cantidad recompensada disminuye cada 210000 bloques (~4 años) a la mitad.
+Otro incentivo es la tasa de transacción ("transaction fee"), la cual está definida por las entradas de transacción ("transaction inputs") no gastadas
+
+### 7. Recuperación de espacio en disco
+El tamaño de cada transacción varía dependiendo del número de entradas (inputs) y salidas (outputs).
+Una buena fórmula para medirlo es la siguiente:
+``` 
+n_inputs*180B + n_outputs*34B + 10B + (+-n_inputs)
+```
+Actualmente, hay una cantidad enorme de transacciones. En caso de que queramos guardarlas todas sería muy difícil, ya que superan la capacidad de almacenamiento de muchos dispositivos.
+![bitcoin_block](https://miro.medium.com/max/640/1*Vkqb67E_FcBEE-UfLUCF1w.webp)
+El encabezado de bloque ("block header") sin transacciones ocupa muchísimo menos.
+Por tanto, si fuésemos capaces de reducir todas las transacciones (Tx0, Tx1, Tx2, Tx3) a un único hash (Root Hash), ahorraríamos una cantidad enorme de almacenamiento sin romper los bloques.
+Para ello, debemos poder relacionar todas las transacciones entre ellas. Esto se conseguirá con el árbol hash de Merkle.
+
+#### Árbol de Merkle (Merkle Tree)
+Es un árbol binario donde los nodos hoja (Hash0, Hash1...) son funciones hash aplicadas a datos (Tx0, Tx1...), y a su vez, los nodos superiores (Hash01, Hash23), son funciones hash aplicadas a la concatenación de sus respectivos nodos hijos. El nodo Root Hash es el nodo superior, está incluido en el encabezado del bloque (Block Header) y almacena las transacciones presentes.
+Al realizarlo de esta forma, y no juntando todos los hashes en uno, conseguiremos un coste logarítmico a la hora de, por ejemplo, comprobar si una transacción está en un bloque.
+
+### 8. Verificación de pago simplificada (Simplified Payment Verification) //TODO
+Suponiendo que tenemos un cliente que no tiene acceso a las transacciones, sino sólo a los encabezados de los bloques, debemos encontrar una forma de comprobar que una transacción específica es válida.
+![payment_verification](https://miro.medium.com/max/640/1*Iqq6mIujzYYCzg9RlaNRHA.webp)
+
+### 9. Combinar y dividir el valor
+Cuando existen numerosas transacciones dependiendo de otras, no debemos preocuparnos por recorrer el árbol entero. Simplemente debemos fijarnos en la salida de la última transacción, ya que ésta refleja el total de monedas disponibles.
+
+### 10. Privacidad
+En los bancos tradicionales, la forma de privacidad es limitando el acceso a las transacciones que se producen y a las partes que intervienen en ellas. Sin embargo, bitcoin debe anunciar publicamente cada transacción, por tanto, esto no es posible.
+La privacidad se consigue manteniendo anónimas las claves públicas y/o utilizando direcciones (addreses) en su lugar. Una buena práctica es utilizar un nuevo par de claves y direcciones por cada transacción.
+
+### 11. Cálculos
+Si suponemos 
 
 ### Referencias
 Probar el funcionamiento de firmas ECDSA:
 https://kjur.github.io/jsrsasign/sample/sample-ecdsa.html
 
-
 ### Bibliografía
 https://medium.com/coinmonks/bitcoin-white-paper-explained-part-1-4-16cba783146a
 https://academy.binance.com/es/articles/double-spending-explained
+https://medium.com/@sgerov/bitcoin-white-paper-explained-part-2-4-d79fbc5e2adf
+https://academy.binance.com/es/articles/proof-of-work-explained
+https://medium.com/coinmonks/bitcoin-white-paper-explained-part-3-3-c06c1791a31b
