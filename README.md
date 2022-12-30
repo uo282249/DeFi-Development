@@ -284,11 +284,55 @@ Sin embargo, los contratos contienen un Árbol Patricia Merkle de almacenamiento
 Las wallets (carteras) de Ethereum son aplicaciones que permiten la interacción con tu cuenta de Ethereum. Tu wallet te permite ver tu saldo, enviar transacciones y conectar con aplicaciones.
 Es una herramienta para únicamente gestionar la cuenta de Ethereum. Por tanto, se puede cambiar a otras wallets sin problema.
 Hay diferentes tipos de wallet:
-- Dispositivos físicos de hardware que permiten mantener las criptomonedas desconectadas.
+- Dispositivos físicos de hardware que permiten mantener las criptomonedas desconectadas (mucha seguridad).
 - Aplicaciones móviles que permiten acceder a los fondos desde cualquier sitio.
 - De navegador web que permiten ser accedidas directamente desde el navegador.
 - Extensiones de navegador que permiten interactuar con tu cuenta y aplicaciones mediante el navegador.
 - Aplicaciones de escritorio que permiten gestionar los fondos deste macOS, Windows o Linux.
+
+### Cuentas de Ethereum
+Ethereum tiene dos tipos de cuenta: de propiedad externa y de contrato. Ambas pueden recibir almacenar y enviar ETH y tokens a la par que interactuar con contratos inteligentes implementados.
+#### Cuenta de propiedad externa (EOA)
+Cualquier persona que disponga de las claves privadas puede controlarla.
+Crearla no tiene ningún coste.
+Se pueden iniciar transacciones.
+Las transacciones entre cuentas de propiedad externa sólo pueden ser transferencias con ETH/tokens.
+
+#### Cuenta de contrato
+Se trata de un contrato inteligente implementado en la red y controlado mediante código. 
+Crear un contrato tiene un coste porque se está usando almacenamiento en la red.
+Sólo se pueden enviar transacciones como respuesta a una transacción recibida.
+Las transacciones de cuentas externas a una cuenta de contrato pueden activar código, que a su vez realiza muchas acciones distintas, como transferir tokens o incluso crear otro contrato.
+
+#### Información detallada de una cuenta
+Las cuentas Ethereum tienen cuatro campos:
+- "nonce": un contador que indica el número de transacciones enviadas desde la cuenta. Esto asegura que las transacciones sólo se procesan una vez. En una cuenta de contrato, este número representa el número de contratos creados por la cuenta.
+- "saldo": número de wei pertenecientes a esa dirección (existen 1e+18 wei por cada ETH).
+- "codeHash": hash que hace referencia al código de una cuenta en la EVM. Las cuentas de contrato tienen fragmentos de código programados que pueden realizar operaciones. Este código se ejecuta si la cuenta recibe una llamada de mensaje. Este campo no se puede modificar, a diferencia del resto. Para las cuentas EOA, este hash es el de una cadena vacía.
+- "storageRoot": hash del nodo raíz de un Árbol de Patricia Merkle que codifica el contenido de almacenamiento de la cuenta (por defecto está vacío).
+![Ethereum_Accounts](https://ethereum.org/static/19443ab40f108c985fb95b07bac29bcb/302a4/accounts.png)
+
+#### Pares de claves
+Una cuenta está formada por un par criptográfico de claves: pública y privada, las cuales ayudan a probar que una transacción fue realmente firmada por el remitente y prevenir falsificaciones.
+La clave privada se utiliza para firmar transacciones y garantiza la custodia de los fondos relacionados con la cuenta.
+(Esto ya ha sido explicado más en profundidad)
+
+#### Creación de cuentas
+A la hora de crear una cuenta de Ethereum, la mayoría de bibliotecas generan una clave privada aleatoria que se puede cifrar con una contrasela.
+La clave pública se genera a partir de la privada, utilizando el algoritmo de firma digital de la curva elíptica.
+Las cuentas de contrato poseen además una dirección hexadecimal de 42 caracteres (más corta que las claves), la cual se asigna cuando un contrato se implementa en la cadena de bloques de Ethereum y se obtiene de la dirección del creador y el número de transacciones enviadas desde esa dirección (el "nonce").
+
+### 
+
+
+
+### Referencias
+Vídeo de pares de claves:
+https://youtu.be/QJ010l-pBpE
+
+### Bibliografía
+https://ethereum.org/en/developers/docs/
+
 
 
 
