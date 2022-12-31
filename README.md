@@ -340,21 +340,180 @@ Incluyen la siguiente información:
 - ```maxFeePerGas```: la cantidad máxima a pagar deseada para la transacción.
 
 El gas es una referencia al cálculo necesario para que el minero procese la transacción. Los usuarios tienen que pagar una comisión por ese cálculo. Los valores ```gasLimit``` y ```maxPriorityFeePerGas``` determinan la comisión por transacción máxima que se le paga al minero.
+
+A continuación se muestra un ejemplo de cómo se verá el objeto de la transacción:
 ```json
 {
-  from: "0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8",
-  to: "0xac03bb73b6a9e108530aff4df5077c2b3d481e5a",
-  gasLimit: "21000",
-  maxFeePerGas: "300",
-  maxPriorityFeePerGas: "10",
-  nonce: "0",
-  value: "10000000000"
+  "from": "0xEA674fdDe714fd979de3EdF0F56AA9716B898ec8",
+  "to": "0xac03bb73b6a9e108530aff4df5077c2b3d481e5a",
+  "gasLimit": "21000",
+  "maxFeePerGas": "300",
+  "maxPriorityFeePerGas": "10",
+  "nonce": "0",
+  "value": "10000000000"
 }
 ```
+Sin embargo, es necesario firmar este objeto mediante la clave privada del emisor, y así demostrar que la transacción no ha sido enviada de forma fraudulenta.
+El proceso de firma se puede realizar con un cliente de Ethereum como Geth.
+
+Ejemplo de una llamada para realizar la firma:
+```json
+{
+  "id": 2,
+  "jsonrpc": "2.0",
+  "method": "account_signTransaction",
+  "params": [
+    {
+      "from": "0x1923f626bb8dc025849e00f99c25fe2b2f7fb0db",
+      "gas": "0x55555",
+      "maxFeePerGas": "0x1234",
+      "maxPriorityFeePerGas": "0x1234",
+      "input": "0xabcd",
+      "nonce": "0x0",
+      "to": "0x07a565b7ed7d7a678680a4c162885bedbb695fe0",
+      "value": "0x1234"
+    }
+  ]
+}
+```
+Ejemplo de respuesta:
+
+```json
+{
+  "jsonrpc": "2.0",
+  "id": 2,
+  "result": {
+    "raw": "0xf88380018203339407a565b7ed7d7a678680a4c162885bedbb695fe080a44401a6e4000000000000000000000000000000000000000000000000000000000000001226a0223a7c9bcf5531c99be5ea7082183816eb20cfe0bbc322e97cc5c7f71ab8b20ea02aadee6b34b45bb15bc42d9c09de4a6754e7000908da72d48cc7704971491663",
+    "tx": {
+      "nonce": "0x0",
+      "maxFeePerGas": "0x1234",
+      "maxPriorityFeePerGas": "0x1234",
+      "gas": "0x55555",
+      "to": "0x07a565b7ed7d7a678680a4c162885bedbb695fe0",
+      "value": "0x1234",
+      "input": "0xabcd",
+      "v": "0x26",
+      "r": "0x223a7c9bcf5531c99be5ea7082183816eb20cfe0bbc322e97cc5c7f71ab8b20e",
+      "s": "0x2aadee6b34b45bb15bc42d9c09de4a6754e7000908da72d48cc7704971491663",
+      "hash": "0xeba2df809e7a612a0a0d444ccfa5c839624bdc00dd29e3340d46df3870f8a30e"
+    }
+  }
+}
+```
+- La propiedad ```raw``` es la transacción firmada en Recursive Length Prefix (RLP).
+- La propiedad ```tx``` es la transacción firmada en formato JSON.
+
+#### Tipos de transacciones
+En Ethereum hay algunos tipos diferentes de transacciones:
+- Transacciones regulares: una transacción desde una cartera a otra.
+- Transacciones de despliegue de contratos: una transacción sin la dirección "a", donde el campo de datos se usa para el código de contrato.
+- Ejecución de un contrato: una transacción que interactúa con un contrato desplegado. En este caso, la dirección "a" es la dirección del contrato.
+
+Tal y se ha mencionado, las transacciones necesitan gas para ejecutarse. Las transacciones de transferencia simple requieren 21.000 unidades de gas.
+De modo que, para que Bob pueda enviar a Alice 1 ETH con un coste de baseFeePerGas de 190 gwei y de maxPriorityFeePerGas de 10 gwei, Bob tendrá que pagar la siguiente comisión:
+```
+(190 + 10) * 21000 = 4,200,000 gwei
+--or--
+0.0042 ETH
+```
+- A la cuenta de Bob se le restarán -1,0042 ETH
+- A la cuenta de Alice se añadirán +1,0 ETH
+- La comisión base que se quemará será de 0,00399 ETH
+- El minero se queda con la propina (+0.000210 ETH)
+
+El gas también es necesario para cualquier interacción del contrato inteligente.
+Cualquier gas no utilizado en una transacción es reembolsado a la cuenta de usuario.
+![Ethereum_EVM_Gas](https://ethereum.org/static/c3638b26a1210d2c73a7ec2335c57351/302a4/gas-tx.png)
+
+#### Ciclo de vida de una transacción
+Una vez que la transacción ha sido enviada ocurre lo siguiente:
+1. Una vez que envíes una transacción, la criptografía genera un hash de transacción: 0x97d99bc7729211111a21b12c933c949d4f31684f1d6954ff477d0477538ff017
+2. A continuación, la transacción se transmite a la red y se incluye en un pool con muchas otras transacciones.
+3. Un minero debe elegir tu transacción e incluirla en un bloque para verificar la transacción y considerarla "exitosa".
+    - Puede que deba esperar en esta fase si la red está ocupada y los mineros no son capaces de mantenerse al día.
+4. Tu transacción recibirá «confirmaciones». El número de confirmaciones indica el número de bloques creados desde el bloque en el cual se incluyó su transacción. Cuanto mayor sea el número, mayor será la certeza de que la red procesó y reconoció la transacción.
+    - Los bloques recientes pueden sufrir un proceso de reorganización, con lo que dará la impresión de que la transacción ha fallado. Sin embargo, es posible que la transacción todavía sea válida pero que se incluya en otro bloque.
+    - La probabilidad de que se lleve a cabo una reorganización disminuye con cada bloque minado posterior, es decir, cuanto mayor es el número de confirmaciones, más inmutable es la transacción.
+
+#### Typed transaction envelope
+Inicialmente, Ethereum tenía un formato único para las transacciones. Cada transacción contenía un nonce, un precio de gas, un límite de gas, una dirección, un importe, datos, y v, r y s. Estos campos se codifican en RLP, y tiene esta apariencia:
+
+```RLP([nonce, gasPrice, gasLimit, to, value, data, v, r, s])```
+
+Hoy en día, Ethereum ha mejorado y ahora es compatible con múltiples tipos de transacciones, lo que permite que se implementen nuevas características como listas de acceso y EIP-1559 sin afectar los formatos de transacción antiguos.
+
+EIP-2718: Typed Transaction Envelope se refiere a un tipo de transacción que funciona como un sobre para futuros tipos de transacción.
+
+El EIP-2718 es un nuevo sobre generalizado para transacciones escritas. En el nuevo modelo, las transacciones se interpretan de la siguiente forma:
+
+```TransactionType || TransactionPayload```
+
+Donde los nuevos campos indican:
+
+- ```TransactionType``` - un número entre 0 y 0x7f, para un total de 128 posibles tipos de transacción.
+- ```TransactionPayload``` - una matriz de bytes arbitraria definida según el tipo de transacción.
+
+#### Gas
+El gas hace referencia a la unidad que mide la cantidad de esfuerzo computacional requerida para ejecutar operaciones específicas en la red de Ethereum.
+Como cada transacción de Ethereum requiere recursos computacionales para ejecutarse, cada transacción requiere una comisión. El gas hace referencia a la comisión necesaria para llevar a cabo una transacción en Ethereum con éxito.
+![Ethereum_gas](https://ethereum.org/static/9628ab90bfd02f64cf873446cbdc6c70/302a4/gas.png)
+Las comisiones de gas se pagan en ether (ETH).
+Los precios del gas están indicados en Gwei (1 Gwei = 0,000000001 ETH ó 10-9 ETH) y significa "giga-wei" (1 Gwei = 1.000.000.000 wei).
+El wei es la unidad más pequeña de ETH.
+
+##### Antes de la actualización de Londres
+Se calculaba el gas de la siguiente forma:
+Supongamos que Alice tiene que pagar 1 ETH a Bob. En la transacción, el límite de gas es de 21.000 unidades y el precio del gas es de 200 gwei.
+El coste total hubiera sido de:
+
+```Gas units (limit) * Gas price per unit```
+
+Aplicando esta fórmula al problema nos queda:
+```21,000 * 200 = 4,200,000 gwei o 0,0042 ETH```
+
+Cuando Alice enviase el dinero, se deducirían 1,0042 ETH de la cuenta de Alice. A Bob se le acreditaría 1,0000 ETH. El minero recibiría 0,0042 ETH.
+
+##### Después de la actualización de Londres
+Ahora, cada bloque tiene:
+- Una comisión base: precio mínimo por unidad de gas para la inclusión en este bloque, la cual se calcula mediante la red en función de los requisitos de espacio del bloque.
+- Una propina: Debido a que la comisión base está quemada, se espera que los usuarios establezcan también una propina para los mineros.
+
+Para calcular el total de la comisión por transacción se sigue esta fórmula:
+
+```Gas units (limit) * (Base fee + Tip)```
+
+Supongamos que Jordan debe pagar a Taylor 1 ETH. En la transacción, el límite de gas es de 21.000 unidades y la comisión base es 100 gwei. Jordan incluye una propina de 10 gwei.
+
+Utilizando la fórmula anterior podemos calcular esto como:
+```21,000 * (100 + 10) = 2,310,000 gwei o 0,00231 ETH```
+
+Lo que se traduce en: cuando Jordan envía el dinero, se deducirán 1,00231 ETH de la cuenta de Jordan. A Taylor se le acreditarán 1,0000 ETH. El minero recibe la propina de 0,00021 ETH. Se aplica una comisión base de 0,0021 ETH.
+
+Asimismo, Jordan también puede establecer una comisión máxima (maxFeePerGas) para esa transacción. La diferencia entre la comisión máxima y la comisión real se le reintegra a Jordan, es decir, ```refund = max fee - (base fee + priority fee)```. Jordan puede establecer una cantidad máximo a pagar para que la transacción se ejecute, sin preocuparse de pagar una cantidad superior a la comisión base cuando se ejecute la transacción.
+
+##### ¿Por qué existen comisiones de gas?
+En resumen, las comisiones de gas ayudan a mantener la seguridad de la red de Ethereum. Al requerir una comisión por cada operación ejecutada en la red, prevenimos que los actores maliciosos envíen spam a la red. Para prevenir la generación de bucles hostiles infinitos o accidentales, así como de otros desperdicios computacionales generados en el código, cada transacción debe establecer un límite del número de pasos computacionales de ejecución de código que puede utilizar. La unidad fundamental del cálculo computacional es el gas.
+
+Aunque una transacción incluye un límite, el gas no utilizado en una transacción se devuelve al usuario (es decir, se devuelve ```max fee - (base fee + tip)```).
+
+#### MetaMask
+MetaMask es una de las carteras de criptomonedas (crypto wallets) más grandes actualmente.
+Se basa en la integración en el navegador y abre puertas para conectarse al mundo Web3, DeFi y NFTs
+
+Consiste en un plugin de navegador que ofrece una cartera de Ethereum y se instala como cualquier otra extensión.
+Una vez instalado, permite al usuario almacenar ETH y otros tokens ERC-20, habilitando las transacciones con cualquier dirección Ethereum.
+
+También habilita la conexión con aplicaciones descentralizadas basadas en Ethereum, lo que nos permite gastar monedas en juegos, stakear tokens, hacer trading en exchanges descentralizados, etc.
+
+![Metamask](https://img.decrypt.co/insecure/rs:fit:950:0:0:0/plain/https://cdn.decrypt.co/wp-content/uploads/2019/01/image2.png@webp)
 
 ### Referencias
 Vídeo de pares de claves:
 https://youtu.be/QJ010l-pBpE
+Vídeo de transacciones:
+https://youtu.be/er-0ihqFQB0
+Calculadora de precios del gas:
+https://etherscan.io/gastracker
 
 ### Bibliografía
 https://ethereum.org/en/developers/docs/
