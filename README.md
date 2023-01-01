@@ -507,6 +507,44 @@ También habilita la conexión con aplicaciones descentralizadas basadas en Ethe
 
 ![Metamask](https://img.decrypt.co/insecure/rs:fit:950:0:0:0/plain/https://cdn.decrypt.co/wp-content/uploads/2019/01/image2.png@webp)
 
+### Nodos y Clientes
+Un "Nodo" es una pieza de software cliente en ejecución.
+Un "Cliente" es una implementación de Ethereum, que verifica todas las transacciones en cada bloque, manteniendo la red segura y la precisión de los datos.
+
+Representación de las características del cliente de Ethereum:
+![Ethereum_Client](https://ethereum.org/static/47d8930ceed4a270e55737d7740bcf9c/cf4cc/client-diagram.png)
+
+#### Tipos de Nodos
+- Nodo completo:
+    - Almacena datos completos de la cadena de bloques.
+    - Participa en la validación de bloques, verifica todos los bloques y estados.
+    - Todos los estados pueden derivarse de un nodo completo.
+    - Sirve a la red y proporciona datos si se le solicita.
+- Nodo ligero:
+    - Almacena la cadena de cabecera y solicita todo lo demás.
+    - Puede verificar la validez de los datos contra las raíces del estado en las cabeceras de bloques.
+    - Es útil para dispositivos de baja capacidad, como dispositivos incrustados o teléfonos móviles, que no pueden permitirse almacenar gigabytes de datos de blockchain.
+- Nodo de almacenamiento:
+    - Almacena todo lo que se guarda en el nodo completo y construye un archivo de estados históricos. Esto es necesario si quieres consultar algún elementos como el saldo de una cuenta en el bloque número 4.000.000 o simplemente probar sus propias transacciones sin minarlas usando OpenEthereum.
+    - Estos datos representan unidades de terabytes lo que hace que los nodos de archivo sean menos atractivos para los usuarios medios, pero pueden ser útiles para servicios como los exploradores de bloques, proveedores y análisis de cadena.
+
+#### ¿Por qué debería ejecutar un nodo de Ethereum?
+Ejecutar un nodo permite usar Ethereum de forma confiable y privada mientras das soporte al ecosistema.
+Permite utilizar Ethereum de una manera realmente privada, autosuficiente y sin confianza. No se necesita confiar en la red porque uno mismo puede verificar los datos con su cliente. "No confíes, verifica" es un mantra popular en blockchain.
+
+Si ejecuta un nodo completo, toda la red Ethereum se beneficia de él.. Un conjunto diverso de nodos es importante para la salud, seguridad y resiliencia operativa de Ethereum.
+
+![Ethereum_Node](https://ethereum.org/static/aab39e6ce2a2a0ec074d19c4613281c1/ac25d/nodes.png)
+
+#### Go-Ethereum
+Go Ethereum (Geth, para abreviar) una de las implementaciones originales del protocolo de Ethereum. Actualmente, es el cliente más difundido con la mayor base de usuarios y variedad de herramientas para usuarios y desarrolladores. Está escrito en Go, es de código totalmente abierto y se comercializa con la licencia GNU LGPL v3.
+
+### Infura
+Infura se ha diseñado para hacer más fácil la vida a los desarrolladores. Ahora, en lugar de crear y mantener su propio nodo para lanzar su aplicación en Ethereum, los desarrolladores pueden dejar que los “nodos como servicio” de Infura se ocupen de ese trabajo. Esto tiene ventajas importantes para el universo Web3 en desarrollo.
+
+Sin embargo, vuelve la centralización; muchas dApps utilizan Infura como proveedor de nodos, por lo que los problemas de Infura son problemas de todo el sistema.
+Infura es un servicio centralizado, por lo que es posible que un gobierno o un tercero realice un seguimiento de este servicio y censure operaciones. Esto va contra el principio fundamental del espacio descentralizado y elimina lo que hace de la Web3 algo único.
+
 ### Referencias
 Vídeo de pares de claves:
 https://youtu.be/QJ010l-pBpE
@@ -514,11 +552,69 @@ Vídeo de transacciones:
 https://youtu.be/er-0ihqFQB0
 Calculadora de precios del gas:
 https://etherscan.io/gastracker
+Mapa de Nodos Ethereum en tiempo real:
+https://etherscan.io/nodetracker
 
 ### Bibliografía
 https://ethereum.org/en/developers/docs/
+https://www.ledger.com/es/academy/que-es-infura
+
+## Contratos Inteligentes (Smart Contracts)
+Un contrato inteligente es un programa que se ejecuta en la blockchain de Ethereum.
+Es un grupo de código (funciones) y datos (su estado) que existe en una dirección específica en la blockchain de Ethereum.
+
+Los contratos inteligentes son un tipo de cuenta de Ethereum. Esto significa que tienen un saldo y pueden enviar transacciones por la red. Sin embargo, no están controlados por un usuario, sino que están implementados en la red y se ejecutan como se hayan programado. Las cuentas de usuario pueden interactuar con un contrato inteligente enviando transacciones que ejecuten una función definida en el contrato inteligente. Los contratos inteligentes pueden definir reglas, como un contrato normal, y automáticamente se ejecutan a través del código.
+
+### Metáfora de la máquina expendedora
+Para explicar mejor los contratos inteligentes, se puede utilizar la metáfora de una máquina expendedora, donde, con las entradas adecuadas se garantiza una producción.
+
+Para obtener un snack de una máquina expendedora:
+```dinero + selección del snack = obtención del snack```
+
+En un contrato inteligente, se podría expresar de la siguiente forma:
+```js
+pragma solidity 0.8.7;
+
+contract VendingMachine {
+
+    // Declarar las variables del estado del contrato
+    address public owner;
+    mapping (address => uint) public cupcakeBalances;
+
+    // Cuando se implementa el contrato "VendingMachine":
+    // 1. configurar la dirección de implantación como el propietario del contrato
+    // 2. configurar el saldo de magdalenas del contrato inteligente implementado en 100
+    constructor() {
+        owner = msg.sender;
+        cupcakeBalances[address(this)] = 100;
+    }
+
+    // Permitir que el propietario aumente el saldo de magdalenas del contrato inteligente
+    function refill(uint amount) public {
+        require(msg.sender == owner, "Only the owner can refill.");
+        cupcakeBalances[address(this)] += amount;
+    }
+
+    // Permitir que cualquier persona compre magdalenas
+    function purchase(uint amount) public payable {
+        require(msg.value >= amount * 1 ether, "You must pay at least 1 ETH per cupcake");
+        require(cupcakeBalances[address(this)] >= amount, "Not enough cupcakes in stock to complete this purchase");
+        cupcakeBalances[address(this)] -= amount;
+        cupcakeBalances[msg.sender] += amount;
+    }
+}
+```
+Del mismo modo que una máquina expendedora elimina la necesidad de un empleado, los contratos inteligentes pueden sustituir los intermediarios en muchas industrias.
+
+### Sin permiso
+Cualquiera puede escribir un contrato inteligente
 
 
 
 
 
+### Referencias
+
+
+### Bibliografía
+https://ethereum.org/es/developers/docs/
