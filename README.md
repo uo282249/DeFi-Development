@@ -607,14 +607,59 @@ contract VendingMachine {
 Del mismo modo que una máquina expendedora elimina la necesidad de un empleado, los contratos inteligentes pueden sustituir los intermediarios en muchas industrias.
 
 ### Sin permiso
-Cualquiera puede escribir un contrato inteligente
+Cualquiera puede escribir e implementar un contrato inteligente.
+Sólo es necesario aprender un lenguaje de contrato inteligente (Solidity o Vyper) y tener una cantidad suficiente de ETH en la cuenta.
 
+Implementar un contrato inteligente es una transacción, por tanto, es necesario pagar gas. Sin embargo, los costes de gas son mucho más elevados.
 
+### Composición de contratos
+Los contratos inteligentes son públicos en Ethereum. Por tanto, se puede acceder a otros contratos desde un contrato. Los contratos pueden incluso implementar otros contratos.
 
+### Limitaciones
+Los contratos inteligentes no pueden obtener información sobre eventos del mundo real porque no pueden enviar solicitudes HTTP.
 
+Esto se debe a que confiar en información externa puede perjudicar la seguridad y la descentralización. 
+
+### Ciclo de vida
+#### 1. Crear
+Es importante la negociación y reiteración en la primera fase. Las partes involucradas deben llegar a un consenso sobre los términos que se enumeran en el contrato. Es muy similar a las negociaciones de contratos tradicionales que estamos acostumbrados a hacer físicamente, solo que se mantienen digitalmente.
+
+Los participantes del contrato también deben tener una billetera en la cadena de bloques que se utiliza para redactar el contrato inteligente. Una vez finalizado el contenido del contrato, éste debe ser codificado. Debido a la naturaleza personalizada de cada contrato inteligente, la codificación a veces se vuelve difícil. La mayoría de los desarrolladores de blockchain, por lo tanto, proporcionan los medios para probar el comportamiento de un contrato inteligente en el momento de la creación para imitar el comportamiento real del mismo.
+
+Este requisito multiiterativo a menudo justifica una mayor comunicación entre las partes que realizan la transacción y el programador. Tras el acuerdo mutuo de los términos después de la codificación, el contrato inteligente se carga en la red blockchain y se vuelve irreversible. Si es necesario volver a modificar los términos, se debe crear un nuevo contrato.
+
+#### 2. Congelar
+Las transacciones en una cadena de bloques son validadas por un conjunto de computadoras a través de la red llamadas nodos. Estos nodos no son más que mineros de blockchain que dedican la potencia informática a su disposición para garantizar una gobernanza justa del contrato inteligente. A cambio de sus servicios, estos mineros también reciben una pequeña tarifa. Este marco garantiza que la cadena de bloques solo tenga contratos legítimos y no esté obstruida por entradas falsas.
+
+Durante la fase de ‘congelación’, el contrato y sus participantes quedan abiertos al público en el libro mayor público. Cualquier tipo de transferencia de fondos está bloqueada durante este período ya que los nodos actúan como un órgano de gobierno que verifica si se han cumplido las condiciones previas para la ejecución del contrato.
+
+#### 3. Ejecutar
+Los nodos de autenticación verifican la integridad de un contrato inteligente y el motor de interferencia del contrato (o el compilador) ejecuta el código. Cuando las entradas de una de las partes se reciben en forma de monedas (como un compromiso de intercambio de bienes), el motor de interferencia crea una transacción activada por los criterios cumplidos.
+
+Luego, los nuevos datos de transacción se agregan a la cadena de bloques y los nodos de control los verifican una vez más para garantizar el cumplimiento de acuerdo con los términos acordados en el contrato. Este proceso de verificación se rige por el ‘mecanismo de consenso’, es decir, Prueba de trabajo (los mineros comprometen poder de cómputo a la cadena de bloques para convertirse en nodos) o Prueba de participación (los mineros asignan criptomonedas a la cadena de bloques para convertirse en nodos).
+
+#### 4. Finalizar
+Una vez que los datos de la transacción se han escrito en el libro mayor distribuido de la cadena de bloques, el mecanismo de consenso verifica que los activos transferidos por la primera parte se hayan recibido y los descongela para la parte receptora. Esto marca la finalización del contrato inteligente, que luego se cierra y registra. No se puede modificar ni alterar, un concepto llamado ‘finalidad’.
+
+#### ¿Se pueden destruir los contratos inteligentes?
+La cadena de bloques de Ethereum permite una disposición para ejecutar la función de autodestrucción, en caso de que algo salga mal. Para los desarrolladores, esta es una espada de doble filo ya que esta función permite la transferencia de fondos etiquetando la situación como una emergencia. Esto proporciona un canal para que los atacantes cibernéticos también obtengan transferencias ilegítimas de fondos. Esta vulnerabilidad agrega complejidad a la codificación de un contrato inteligente.
+
+Sin embargo, cuando se descubren tales fallas, los desarrolladores también agregan protocolos actualizados para implementar medidas de seguridad reforzadas. Una vez que se cierran las brechas, se crea un nuevo contrato utilizando los protocolos actualizados.
+
+### Solidity
+Solidity es un lenguaje de programación. Pero no está diseñado para crear programas normales, sino que es un lenguaje específicamente creado para programar contratos inteligentes. Su sintaxtis está basada en ECMAScript, y similar a otros lenguajes como JavaScript y C, pero con la diferencia de implementar un tipado fuerte a la hora de declarar el tipo de variables y argumentos. Esto es así para garantizar el rigor del contrato.
+
+Además, debido a la similitud entre la cadena de bloques de Ethereum y otras similares como Polygon o Binance, Solidity también se puede implementar en otras redes de forma que su funcionamiento siga siendo predecible. Su compilador analizará el código del contrato en tiempo de ejecución para verificar que intentamos realizar la operación adecuada con el tipo de valor adecuado.
+
+Para empezar a programar con Solidity existen varios programas. Sin embargo, uno de los más recomendados es Remix IDE. Se trata de un entorno de desarrollo basado en el navegador, desde el se pueden escribir, compilar a implementar los contratos inteligentes.
 
 ### Referencias
-
+Cómo llamar a un contrato inteligente desde JS: 
+https://ethereum.org/es/developers/tutorials/calling-a-smart-contract-from-javascript/
+web3.js interactúa con contratos inteligentes:
+https://programmerclick.com/article/4316865055/
 
 ### Bibliografía
 https://ethereum.org/es/developers/docs/
+https://101noticias.com/ciclo-de-vida-de-los-contratos-inteligentes-en-una-cadena-de-bloques/
+https://www.xataka.com/basics/solidity-que-sirve-este-lenguaje-programacion
